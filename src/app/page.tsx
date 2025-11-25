@@ -67,7 +67,7 @@ export default function HomePage() {
                 <p className="text-sm text-primary font-mono">Hi, my name is</p>
                 <h1 className="text-5xl lg:text-7xl font-bold text-foreground text-balance">Jesse Ray S. Lasam</h1>
                 <h2 className="text-3xl lg:text-5xl font-bold text-muted-foreground text-balance">
-                  IT Student | AI Enthusiast | Cybersecurity Focused
+                  IT Student | AI Enthusiast | Cybersecurity Focused | AI Protector Workshop Intern
                 </h2>
               </div>
               <p className="text-lg text-muted-foreground text-pretty max-w-2xl leading-relaxed">
