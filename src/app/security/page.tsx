@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Shield, Check, AlertTriangle, Clock } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Shield, Check, AlertTriangle, Clock, FileText, TestTube } from "lucide-react"
 import Link from "next/link"
 
 export default function SecurityPage() {
@@ -15,43 +16,55 @@ export default function SecurityPage() {
       name: "Clerk Authentication", 
       status: "pass", 
       icon: Check,
-      description: "Industry-standard OAuth authentication"
+      description: "OAuth 2.0 with JWT token validation"
     },
     { 
       name: "Security Headers", 
       status: "pass", 
       icon: Check,
-      description: "HSTS, CSP, X-Frame-Options configured"
+      description: "HSTS, CSP, X-Frame-Options, 10+ headers configured"
     },
     { 
       name: "Environment Variables Secured", 
       status: "pass", 
       icon: Check,
-      description: "Secrets managed via Vercel"
+      description: "Clerk + Arcjet keys secured via Vercel"
     },
     { 
       name: "WAF Configured", 
-      status: "pending", 
-      icon: Clock,
-      description: "Web Application Firewall - Week 4"
+      status: "pass", 
+      icon: Check,
+      description: "Arcjet WAF active with rate limiting and bot detection"
     },
     { 
       name: "Rate Limiting", 
-      status: "pending", 
-      icon: Clock,
-      description: "Arcjet rate limiting - Week 4"
+      status: "pass", 
+      icon: Check,
+      description: "100 requests/minute per IP via Arcjet"
     },
     { 
       name: "Penetration Testing", 
-      status: "pending", 
-      icon: Clock,
-      description: "Kali Linux security audit - Week 5"
+      status: "pass", 
+      icon: Check,
+      description: "SQL injection, XSS, rate limit tests passed"
     },
     { 
-      name: "OAuth 2.1 MCP", 
-      status: "pending", 
-      icon: Clock,
-      description: "Advanced MCP authentication - Week 7-8"
+      name: "OAuth 2.1 MCP Server", 
+      status: "pass", 
+      icon: Check,
+      description: "OAuth-secured MCP endpoint with JWT validation"
+    },
+    { 
+      name: "Security Monitoring", 
+      status: "pass", 
+      icon: Check,
+      description: "Real-time security dashboard and metrics API"
+    },
+    { 
+      name: "Bot Detection", 
+      status: "pass", 
+      icon: Check,
+      description: "Arcjet bot detection with search engine allowlist"
     },
   ]
 
@@ -88,22 +101,44 @@ export default function SecurityPage() {
         <div className="grid gap-6 md:grid-cols-3 mb-8">
           <Card className="p-6 bg-green-500/10 border-green-500/20">
             <div className="text-center">
-              <p className="text-3xl font-bold text-green-600">4</p>
+              <p className="text-3xl font-bold text-green-600">10</p>
               <p className="text-sm text-muted-foreground">Implemented</p>
             </div>
           </Card>
-          <Card className="p-6 bg-yellow-500/10 border-yellow-500/20">
+          <Card className="p-6 bg-green-500/10 border-green-500/20">
             <div className="text-center">
-              <p className="text-3xl font-bold text-yellow-600">4</p>
-              <p className="text-sm text-muted-foreground">In Progress</p>
+              <p className="text-3xl font-bold text-green-600">0</p>
+              <p className="text-sm text-muted-foreground">Pending</p>
             </div>
           </Card>
-          <Card className="p-6 bg-blue-500/10 border-blue-500/20">
+          <Card className="p-6 bg-green-500/10 border-green-500/20">
             <div className="text-center">
-              <p className="text-3xl font-bold text-blue-600">50%</p>
+              <p className="text-3xl font-bold text-green-600">100%</p>
               <p className="text-sm text-muted-foreground">Overall Progress</p>
             </div>
           </Card>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="flex gap-4 mb-8">
+          <Link href="/testing">
+            <Button size="lg" className="w-full sm:w-auto">
+              <TestTube className="mr-2 h-4 w-4" />
+              View Test Results
+            </Button>
+          </Link>
+          <Link href="/security-plan">
+            <Button variant="outline" size="lg" className="w-full sm:w-auto">
+              <FileText className="mr-2 h-4 w-4" />
+              Security Plan
+            </Button>
+          </Link>
+          <Link href="/dashboard/security">
+            <Button variant="outline" size="lg" className="w-full sm:w-auto">
+              <Shield className="mr-2 h-4 w-4" />
+              Live Monitoring
+            </Button>
+          </Link>
         </div>
 
         {/* Security Checks */}
@@ -152,37 +187,54 @@ export default function SecurityPage() {
               <Badge className="bg-green-500">✓</Badge>
               <div>
                 <p className="font-medium">Weeks 1-3: Security Foundation</p>
-                <p className="text-sm text-muted-foreground">HTTPS, Authentication, Security Headers</p>
+                <p className="text-sm text-muted-foreground">HTTPS, OAuth 2.0, Security Headers - Complete</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <Badge variant="secondary">→</Badge>
+              <Badge className="bg-green-500">✓</Badge>
               <div>
-                <p className="font-medium">Week 4: Defensive Operations</p>
-                <p className="text-sm text-muted-foreground">WAF, Arcjet, Rate Limiting</p>
+                <p className="font-medium">Week 4: Arcjet WAF Integration</p>
+                <p className="text-sm text-muted-foreground">Rate limiting, Bot detection, SQL shield - Complete</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <Badge variant="outline">○</Badge>
+              <Badge className="bg-green-500">✓</Badge>
               <div>
-                <p className="font-medium">Week 5: Offensive Security</p>
-                <p className="text-sm text-muted-foreground">Kali Linux Penetration Testing</p>
+                <p className="font-medium">Week 5: Penetration Testing</p>
+                <p className="text-sm text-muted-foreground">SQL injection, XSS, rate limit tests - All Passed</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <Badge variant="outline">○</Badge>
+              <Badge className="bg-green-500">✓</Badge>
               <div>
-                <p className="font-medium">Weeks 7-8: Advanced Security</p>
-                <p className="text-sm text-muted-foreground">OAuth 2.1 MCP Authentication</p>
+                <p className="font-medium">Weeks 6-8: OAuth 2.1 MCP Server</p>
+                <p className="text-sm text-muted-foreground">JWT validation, Admin controls - Complete</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <Badge variant="outline">○</Badge>
+              <Badge className="bg-green-500">✓</Badge>
               <div>
-                <p className="font-medium">Week 9-10: Operations & Monitoring</p>
-                <p className="text-sm text-muted-foreground">Security Dashboard & Final Integration</p>
+                <p className="font-medium">Week 9: Security Monitoring</p>
+                <p className="text-sm text-muted-foreground">Real-time dashboard, Metrics API - Complete</p>
               </div>
             </div>
+            <div className="flex items-center gap-4">
+              <Badge className="bg-green-500">✓</Badge>
+              <div>
+                <p className="font-medium">Week 10: Production Deployment</p>
+                <p className="text-sm text-muted-foreground">CI/CD pipeline, Final validation - Complete</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-8 p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
+            <div className="flex items-center gap-2">
+              <Check className="h-5 w-5 text-green-600" />
+              <p className="font-semibold text-green-600">All 10 Weeks Complete - Production Ready</p>
+            </div>
+            <p className="text-sm text-muted-foreground mt-2">
+              Completion Date: November 25, 2025 • Status: Live in Production
+            </p>
           </div>
         </Card>
       </div>
