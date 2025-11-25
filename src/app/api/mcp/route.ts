@@ -1,5 +1,6 @@
 import { auth } from '@clerk/nextjs/server'
 import { NextRequest, NextResponse } from 'next/server'
+import aj from '@/lib/arcjet'
 
 /**
  * MCP (Model Context Protocol) Server Endpoint
@@ -8,6 +9,21 @@ import { NextRequest, NextResponse } from 'next/server'
  */
 
 export async function GET(request: NextRequest) {
+  // Apply Arcjet WAF protection
+  const decision = await aj.protect(request, { requested: 1 })
+  if (decision.isDenied()) {
+    if (decision.reason.isRateLimit()) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Please slow down.' },
+        { status: 429 }
+      )
+    }
+    return NextResponse.json(
+      { error: 'Request blocked by security policy' },
+      { status: 403 }
+    )
+  }
+
   const authResult = await auth()
   const userId = authResult.userId
 
@@ -38,6 +54,21 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  // Apply Arcjet WAF protection
+  const decision = await aj.protect(request, { requested: 1 })
+  if (decision.isDenied()) {
+    if (decision.reason.isRateLimit()) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Please slow down.' },
+        { status: 429 }
+      )
+    }
+    return NextResponse.json(
+      { error: 'Request blocked by security policy' },
+      { status: 403 }
+    )
+  }
+
   const authResult = await auth()
   const userId = authResult.userId
 

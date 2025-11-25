@@ -1,54 +1,31 @@
-// Arcjet configuration for Web Application Firewall
-// This will be fully implemented in Week 4
-// Currently serving as a placeholder for the security architecture
+// Arcjet Web Application Firewall Configuration
+// Week 4 Implementation - OAuth 2.0 + MCP Security
 
-export interface ArcjetDecision {
-  isDenied(): boolean
-  reason: {
-    isRateLimit(): boolean
-    isBot(): boolean
-  }
-}
+import arcjet, { tokenBucket, detectBot, shield } from "@arcjet/next"
 
-export interface ArcjetConfig {
-  key: string
-  characteristics: string[]
-  rules: Array<{
-    mode: string
-    [key: string]: any
-  }>
-}
-
-// Placeholder protect function until Arcjet is installed
-export async function protect(request: Request): Promise<ArcjetDecision> {
-  return {
-    isDenied: () => false,
-    reason: {
-      isRateLimit: () => false,
-      isBot: () => false,
-    },
-  }
-}
-
-// Configuration ready for Week 4 Arcjet integration
-export const arcjetConfig: Partial<ArcjetConfig> = {
+const aj = arcjet({
+  key: process.env.ARCJET_KEY!, // Get this from https://app.arcjet.com
   characteristics: ["ip.src"],
   rules: [
-    {
+    // Rate limiting: 100 requests per minute per IP
+    tokenBucket({
       mode: "LIVE",
-      type: "tokenBucket",
       refillRate: 10,
-      interval: 60,
+      interval: "60s",
       capacity: 100,
-    },
-    {
+    }),
+    // Bot detection - allow search engines
+    detectBot({
       mode: "LIVE",
-      type: "detectBot",
-      allow: ["GOOGLE_SEARCH", "BING_SEARCH"],
-    },
-    {
+      allow: [
+        "CATEGORY:SEARCH_ENGINE",
+      ],
+    }),
+    // Shield for common attacks (SQL injection, XSS, etc.)
+    shield({
       mode: "LIVE",
-      type: "shield",
-    },
+    }),
   ],
-}
+})
+
+export default aj

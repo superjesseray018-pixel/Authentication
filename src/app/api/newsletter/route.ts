@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
+import aj from "@/lib/arcjet"
 
 // Mock database for prototype - in production this would connect to Neon
 const subscribers: { id: string; email: string; subscribedAt: string }[] = [
@@ -20,6 +21,30 @@ const subscribers: { id: string; email: string; subscribedAt: string }[] = [
 ]
 
 export async function POST(request: NextRequest) {
+  // Apply Arcjet protection (rate limiting, bot detection, shield)
+  const decision = await aj.protect(request, { requested: 1 })
+
+  if (decision.isDenied()) {
+    if (decision.reason.isRateLimit()) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        { status: 429 }
+      )
+    }
+    
+    if (decision.reason.isBot()) {
+      return NextResponse.json(
+        { error: "Bot access denied" },
+        { status: 403 }
+      )
+    }
+
+    return NextResponse.json(
+      { error: "Request blocked by security policy" },
+      { status: 403 }
+    )
+  }
+
   try {
     const { email } = await request.json()
 
