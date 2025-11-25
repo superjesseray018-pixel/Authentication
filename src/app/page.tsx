@@ -48,6 +48,12 @@ export default function HomePage() {
               >
                 Security
               </Link>
+              <Link
+                href="/testing"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Testing
+              </Link>
               <Link href="#contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Contact
               </Link>
