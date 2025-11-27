@@ -96,6 +96,7 @@ export default function TestingPage() {
     }
     return <Badge variant="outline">{status}</Badge>
   }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto px-4 py-12 max-w-6xl">
@@ -719,67 +720,6 @@ export default function TestingPage() {
                     </AlertDescription>
                   </Alert>
                 )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-                    <h3 className="font-semibold mb-3 flex items-center gap-2">
-                      <FileCode className="h-4 w-4" />
-                      Testing Approach
-                    </h3>
-                    <ul className="space-y-2 text-sm text-muted-foreground">
-                      <li className="flex items-start gap-2">
-                        <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5" />
-                        <span>Automated PowerShell test suite</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5" />
-                        <span>Manual payload testing</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5" />
-                        <span>Production environment validation</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <CheckCircle2 className="h-4 w-4 text-green-600 mt-0.5" />
-                        <span>OWASP Top 10 coverage</span>
-                      </li>
-                    </ul>
-                  </div>
-
-                  <div>
-                    <h3 className="font-semibold mb-3 flex items-center gap-2">
-                      <Shield className="h-4 w-4" />
-                      Test Environment
-                    </h3>
-                    <ul className="space-y-2 text-sm">
-                      <li className="flex justify-between">
-                        <span className="text-muted-foreground">Target</span>
-                        <Badge variant="outline">Production</Badge>
-                      </li>
-                      <li className="flex justify-between">
-                        <span className="text-muted-foreground">URL</span>
-                        <span className="text-xs font-mono">vercel.app</span>
-                      </li>
-                      <li className="flex justify-between">
-                        <span className="text-muted-foreground">Date</span>
-                        <span className="text-xs">Nov 25, 2025</span>
-                      </li>
-                      <li className="flex justify-between">
-                        <span className="text-muted-foreground">Authorization</span>
-                        <Badge variant="default" className="bg-green-600">Authorized</Badge>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-
-                <Alert>
-                  <Shield className="h-4 w-4" />
-                  <AlertTitle>Security Best Practice</AlertTitle>
-                  <AlertDescription>
-                    All penetration tests were conducted on our own application with full authorization. 
-                    Never test applications you don't own without explicit permission.
-                  </AlertDescription>
-                </Alert>
               </CardContent>
             </Card>
           </TabsContent>
