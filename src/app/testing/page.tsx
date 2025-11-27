@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { CheckCircle2, XCircle, Shield, AlertTriangle, Terminal, FileCode, Lock, Zap, Play, Loader2 } from "lucide-react"
+import { CheckCircle2, XCircle, Shield, AlertTriangle, Terminal, FileCode, Lock, Zap, Play, Loader2, RotateCcw } from "lucide-react"
 import Link from "next/link"
 
 type TestResult = {
@@ -72,6 +72,18 @@ export default function TestingPage() {
     setActiveTest(null)
   }
 
+  const resetAllTests = () => {
+    setTestResults({})
+    setLoading(false)
+    setActiveTest(null)
+  }
+
+  const resetTest = (testType: string) => {
+    const newResults = { ...testResults }
+    delete newResults[testType]
+    setTestResults(newResults)
+  }
+
   const getStatusIcon = (status: string) => {
     switch (status.toLowerCase()) {
       case "pass":
@@ -129,10 +141,21 @@ export default function TestingPage() {
               )}
             </Button>
             {Object.keys(testResults).length > 0 && (
-              <Badge variant="default" className="text-base px-4 py-2">
-                <CheckCircle2 className="h-4 w-4 mr-2" />
-                {Object.keys(testResults).length} Tests Complete
-              </Badge>
+              <>
+                <Badge variant="default" className="text-base px-4 py-2">
+                  <CheckCircle2 className="h-4 w-4 mr-2" />
+                  {Object.keys(testResults).length} Tests Complete
+                </Badge>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  onClick={resetAllTests}
+                  disabled={loading}
+                >
+                  <RotateCcw className="h-5 w-5 mr-2" />
+                  Reset All
+                </Button>
+              </>
             )}
           </div>
         </div>
@@ -401,14 +424,25 @@ export default function TestingPage() {
                     <CardTitle>SQL Injection Testing</CardTitle>
                     <CardDescription>Testing database query protection and input validation</CardDescription>
                   </div>
-                  <Button onClick={() => runTest("sql-injection")} disabled={loading}>
-                    {activeTest === "sql-injection" ? (
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    ) : (
-                      <Play className="h-4 w-4 mr-2" />
+                  <div className="flex gap-2">
+                    <Button onClick={() => runTest("sql-injection")} disabled={loading}>
+                      {activeTest === "sql-injection" ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Play className="h-4 w-4 mr-2" />
+                      )}
+                      Run Test
+                    </Button>
+                    {testResults["sql-injection"] && (
+                      <Button
+                        variant="outline"
+                        onClick={() => resetTest("sql-injection")}
+                        disabled={loading}
+                      >
+                        <RotateCcw className="h-4 w-4" />
+                      </Button>
                     )}
-                    Run Test
-                  </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
@@ -468,14 +502,25 @@ export default function TestingPage() {
                     <CardTitle>Cross-Site Scripting (XSS) Testing</CardTitle>
                     <CardDescription>Testing input sanitization and output encoding</CardDescription>
                   </div>
-                  <Button onClick={() => runTest("xss")} disabled={loading}>
-                    {activeTest === "xss" ? (
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    ) : (
-                      <Play className="h-4 w-4 mr-2" />
+                  <div className="flex gap-2">
+                    <Button onClick={() => runTest("xss")} disabled={loading}>
+                      {activeTest === "xss" ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Play className="h-4 w-4 mr-2" />
+                      )}
+                      Run Test
+                    </Button>
+                    {testResults["xss"] && (
+                      <Button
+                        variant="outline"
+                        onClick={() => resetTest("xss")}
+                        disabled={loading}
+                      >
+                        <RotateCcw className="h-4 w-4" />
+                      </Button>
                     )}
-                    Run Test
-                  </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
@@ -534,14 +579,25 @@ export default function TestingPage() {
                     <CardTitle>Rate Limiting & DDoS Protection</CardTitle>
                     <CardDescription>Testing traffic control and abuse prevention</CardDescription>
                   </div>
-                  <Button onClick={() => runTest("rate-limiting")} disabled={loading}>
-                    {activeTest === "rate-limiting" ? (
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    ) : (
-                      <Play className="h-4 w-4 mr-2" />
+                  <div className="flex gap-2">
+                    <Button onClick={() => runTest("rate-limiting")} disabled={loading}>
+                      {activeTest === "rate-limiting" ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Play className="h-4 w-4 mr-2" />
+                      )}
+                      Run Test
+                    </Button>
+                    {testResults["rate-limiting"] && (
+                      <Button
+                        variant="outline"
+                        onClick={() => resetTest("rate-limiting")}
+                        disabled={loading}
+                      >
+                        <RotateCcw className="h-4 w-4" />
+                      </Button>
                     )}
-                    Run Test
-                  </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
@@ -599,14 +655,25 @@ export default function TestingPage() {
                     <CardTitle>Security Headers Validation</CardTitle>
                     <CardDescription>Testing HTTP security header configuration</CardDescription>
                   </div>
-                  <Button onClick={() => runTest("security-headers")} disabled={loading}>
-                    {activeTest === "security-headers" ? (
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    ) : (
-                      <Play className="h-4 w-4 mr-2" />
+                  <div className="flex gap-2">
+                    <Button onClick={() => runTest("security-headers")} disabled={loading}>
+                      {activeTest === "security-headers" ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Play className="h-4 w-4 mr-2" />
+                      )}
+                      Run Test
+                    </Button>
+                    {testResults["security-headers"] && (
+                      <Button
+                        variant="outline"
+                        onClick={() => resetTest("security-headers")}
+                        disabled={loading}
+                      >
+                        <RotateCcw className="h-4 w-4" />
+                      </Button>
                     )}
-                    Run Test
-                  </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
@@ -667,14 +734,25 @@ export default function TestingPage() {
                     <CardTitle>Authentication Security Testing</CardTitle>
                     <CardDescription>Testing OAuth 2.0 and session management</CardDescription>
                   </div>
-                  <Button onClick={() => runTest("authentication")} disabled={loading}>
-                    {activeTest === "authentication" ? (
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    ) : (
-                      <Play className="h-4 w-4 mr-2" />
+                  <div className="flex gap-2">
+                    <Button onClick={() => runTest("authentication")} disabled={loading}>
+                      {activeTest === "authentication" ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Play className="h-4 w-4 mr-2" />
+                      )}
+                      Run Test
+                    </Button>
+                    {testResults["authentication"] && (
+                      <Button
+                        variant="outline"
+                        onClick={() => resetTest("authentication")}
+                        disabled={loading}
+                      >
+                        <RotateCcw className="h-4 w-4" />
+                      </Button>
                     )}
-                    Run Test
-                  </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
