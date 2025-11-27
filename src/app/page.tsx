@@ -17,47 +17,88 @@ import {
   Code,
 } from "lucide-react"
 import Link from "next/link"
+import {
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from "@clerk/nextjs"
 
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <nav className="border-b border-border/40 backdrop-blur-sm sticky top-0 z-50 bg-background/80">
-        <div className="max-w-6xl mx-auto px-6 lg:px-8">
+      <nav className="border-b border-border/40 backdrop-blur-sm sticky top-0 z-50 bg-background/95">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
+            {/* Logo */}
             <Link href="/" className="flex items-center space-x-2 group">
               <Shield className="h-6 w-6 text-primary group-hover:text-secondary transition-colors" />
               <span className="text-lg font-semibold text-foreground">JRL</span>
             </Link>
-            <div className="flex items-center space-x-8">
-              <Link href="#about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+
+            {/* Navigation Links & Auth */}
+            <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-6">
+              {/* Nav Links */}
+              <Link
+                href="#about"
+                className="hidden md:inline-flex text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-2 rounded-md hover:bg-accent"
+              >
                 About
               </Link>
               <Link
                 href="#experience"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="hidden md:inline-flex text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-2 rounded-md hover:bg-accent"
               >
                 Experience
               </Link>
-              <Link href="#projects" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <Link
+                href="#projects"
+                className="hidden lg:inline-flex text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-2 rounded-md hover:bg-accent"
+              >
                 Projects
               </Link>
               <Link
                 href="/security-plan"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="hidden md:inline-flex text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-2 rounded-md hover:bg-accent"
               >
                 Security
               </Link>
               <Link
                 href="/testing"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="hidden lg:inline-flex text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-2 rounded-md hover:bg-accent"
               >
                 Testing
               </Link>
-              <Link href="#contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <Link
+                href="#contact"
+                className="hidden md:inline-flex text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-2 rounded-md hover:bg-accent"
+              >
                 Contact
               </Link>
-              <ThemeToggle />
+
+              {/* Theme Toggle */}
+              <div className="px-2">
+                <ThemeToggle />
+              </div>
+
+              {/* Auth Buttons */}
+              <SignedOut>
+                <SignInButton mode="modal">
+                  <Button variant="ghost" size="sm" className="text-sm">
+                    Sign in
+                  </Button>
+                </SignInButton>
+                <SignUpButton mode="modal">
+                  <Button size="sm" className="bg-primary hover:bg-primary/90 text-sm">
+                    Sign Up
+                  </Button>
+                </SignUpButton>
+              </SignedOut>
+              <SignedIn>
+                <UserButton afterSignOutUrl="/" />
+              </SignedIn>
             </div>
           </div>
         </div>
