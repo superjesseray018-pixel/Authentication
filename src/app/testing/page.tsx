@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { CheckCircle2, XCircle, Shield, AlertTriangle, Terminal, FileCode, Lock, Zap, Play, Loader2, RotateCcw } from "lucide-react"
+import { CheckCircle2, XCircle, Shield, AlertTriangle, Terminal, FileCode, Lock, Zap, Play, Loader2, RotateCcw, Download } from "lucide-react"
 import Link from "next/link"
 
 type TestResult = {
@@ -34,6 +34,9 @@ export default function TestingPage() {
   const [activeTest, setActiveTest] = useState<string | null>(null)
   const [testResults, setTestResults] = useState<Record<string, TestResponse>>({})
   const [loading, setLoading] = useState(false)
+  const [kaliOutput, setKaliOutput] = useState<string[]>([])
+  const [kaliLoading, setKaliLoading] = useState(false)
+  const [selectedKaliTest, setSelectedKaliTest] = useState<string>("")
 
   const runTest = async (testType: string) => {
     setLoading(true)
@@ -107,6 +110,114 @@ export default function TestingPage() {
       return <Badge className="bg-red-500/10 text-red-600 border-red-500/20">{status}</Badge>
     }
     return <Badge variant="outline">{status}</Badge>
+  }
+
+  const runKaliTest = async (testType: string) => {
+    setKaliLoading(true)
+    setSelectedKaliTest(testType)
+    setKaliOutput([`> Running ${testType} test...`, ""])
+
+    try {
+      const response = await fetch("/api/pentest/run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tests: [testType] }),
+      })
+
+      const reader = response.body?.getReader()
+      const decoder = new TextDecoder()
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+
+          const chunk = decoder.decode(value)
+          const lines = chunk.split("\n").filter((line) => line.trim())
+
+          for (const line of lines) {
+            if (line.startsWith("data: ")) {
+              const data = line.slice(6)
+              if (data === "[DONE]") continue
+              setKaliOutput((prev) => [...prev, data])
+            }
+          }
+        }
+      }
+
+      setKaliOutput((prev) => [...prev, "", `✓ ${testType} test complete`])
+    } catch (error) {
+      setKaliOutput((prev) => [...prev, "", `✗ Error: ${error}`])
+    } finally {
+      setKaliLoading(false)
+    }
+  }
+
+  const runAllKaliTests = async () => {
+    setKaliLoading(true)
+    setSelectedKaliTest("all")
+    setKaliOutput(["> Running comprehensive Kali Linux penetration tests...", ""])
+
+    const tests = ["security-headers", "rate-limit", "sql-injection", "xss", "auth-bypass"]
+
+    for (const test of tests) {
+      setKaliOutput((prev) => [...prev, "", `> Starting ${test} test...`])
+      
+      try {
+        const response = await fetch("/api/pentest/run", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ tests: [test] }),
+        })
+
+        const reader = response.body?.getReader()
+        const decoder = new TextDecoder()
+
+        if (reader) {
+          while (true) {
+            const { done, value } = await reader.read()
+            if (done) break
+
+            const chunk = decoder.decode(value)
+            const lines = chunk.split("\n").filter((line) => line.trim())
+
+            for (const line of lines) {
+              if (line.startsWith("data: ")) {
+                const data = line.slice(6)
+                if (data === "[DONE]") continue
+                setKaliOutput((prev) => [...prev, data])
+              }
+            }
+          }
+        }
+
+        setKaliOutput((prev) => [...prev, `✓ ${test} complete`])
+      } catch (error) {
+        setKaliOutput((prev) => [...prev, `✗ ${test} failed: ${error}`])
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 500))
+    }
+
+    setKaliOutput((prev) => [...prev, "", "=" .repeat(60), "✓ All Kali Linux tests complete"])
+    setKaliLoading(false)
+  }
+
+  const exportKaliResults = () => {
+    const blob = new Blob([kaliOutput.join("\n")], { type: "text/plain" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `kali-pentest-${new Date().toISOString().split("T")[0]}.txt`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
+  const clearKaliOutput = () => {
+    setKaliOutput([])
+    setSelectedKaliTest("")
   }
 
   return (
@@ -274,13 +385,17 @@ export default function TestingPage() {
 
         {/* Main Tabs */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="sql-injection">SQL Injection</TabsTrigger>
             <TabsTrigger value="xss">XSS Testing</TabsTrigger>
             <TabsTrigger value="rate-limit">Rate Limiting</TabsTrigger>
             <TabsTrigger value="headers">Headers</TabsTrigger>
             <TabsTrigger value="auth">Auth</TabsTrigger>
+            <TabsTrigger value="kali">
+              <Terminal className="h-4 w-4 mr-2" />
+              Kali Linux
+            </TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
@@ -798,6 +913,163 @@ export default function TestingPage() {
                     </AlertDescription>
                   </Alert>
                 )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Kali Linux Terminal Tab */}
+          <TabsContent value="kali" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <Terminal className="h-5 w-5" />
+                      Kali Linux Penetration Testing
+                    </CardTitle>
+                    <CardDescription>Live terminal output from security testing tools</CardDescription>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button onClick={runAllKaliTests} disabled={kaliLoading}>
+                      {kaliLoading ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Play className="h-4 w-4 mr-2" />
+                      )}
+                      Run All Tests
+                    </Button>
+                    {kaliOutput.length > 0 && (
+                      <>
+                        <Button variant="outline" onClick={exportKaliResults} disabled={kaliLoading}>
+                          <Download className="h-4 w-4 mr-2" />
+                          Export
+                        </Button>
+                        <Button variant="outline" onClick={clearKaliOutput} disabled={kaliLoading}>
+                          <RotateCcw className="h-4 w-4" />
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <Alert>
+                  <Shield className="h-4 w-4" />
+                  <AlertTitle>Professional Penetration Testing</AlertTitle>
+                  <AlertDescription>
+                    Run comprehensive security tests with real-time terminal output. Select individual tests or run
+                    all tests to perform a full security assessment.
+                  </AlertDescription>
+                </Alert>
+
+                {/* Quick Test Buttons */}
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={() => runKaliTest("security-headers")}
+                    disabled={kaliLoading}
+                    className="h-auto py-3"
+                  >
+                    <Shield className="h-4 w-4 mr-2" />
+                    Security Headers
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => runKaliTest("rate-limit")}
+                    disabled={kaliLoading}
+                    className="h-auto py-3"
+                  >
+                    <Zap className="h-4 w-4 mr-2" />
+                    Rate Limiting
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => runKaliTest("sql-injection")}
+                    disabled={kaliLoading}
+                    className="h-auto py-3"
+                  >
+                    <FileCode className="h-4 w-4 mr-2" />
+                    SQL Injection
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => runKaliTest("xss")}
+                    disabled={kaliLoading}
+                    className="h-auto py-3"
+                  >
+                    <AlertTriangle className="h-4 w-4 mr-2" />
+                    XSS Testing
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => runKaliTest("auth-bypass")}
+                    disabled={kaliLoading}
+                    className="h-auto py-3"
+                  >
+                    <Lock className="h-4 w-4 mr-2" />
+                    Auth Bypass
+                  </Button>
+                </div>
+
+                {/* Terminal Output */}
+                <Card className="bg-black border-green-500/20">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-3 pb-2 border-b border-green-500/20">
+                      <div className="flex items-center gap-2">
+                        <Terminal className="h-4 w-4 text-green-500" />
+                        <span className="text-green-500 font-mono text-sm">kali@pentest:~$</span>
+                      </div>
+                      {kaliLoading && (
+                        <Badge variant="outline" className="border-green-500/50 text-green-500">
+                          <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                          Running...
+                        </Badge>
+                      )}
+                    </div>
+                    
+                    <div 
+                      className="font-mono text-sm text-green-400 overflow-y-auto max-h-[600px] space-y-1"
+                      style={{ scrollBehavior: "smooth" }}
+                    >
+                      {kaliOutput.length > 0 ? (
+                        kaliOutput.map((line, idx) => (
+                          <div key={idx} className="whitespace-pre-wrap break-all">
+                            {line}
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-green-500/50 italic">
+                          Waiting for test execution... Select a test above or run all tests.
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Test Information */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <Card className="border-blue-500/20 bg-blue-500/5">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-sm">What is Kali Linux?</CardTitle>
+                    </CardHeader>
+                    <CardContent className="text-sm text-muted-foreground">
+                      Kali Linux is a Debian-based distribution designed for digital forensics and penetration
+                      testing. It comes pre-installed with hundreds of security tools for vulnerability assessment
+                      and ethical hacking.
+                    </CardContent>
+                  </Card>
+
+                  <Card className="border-purple-500/20 bg-purple-500/5">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-sm">Tests Performed</CardTitle>
+                    </CardHeader>
+                    <CardContent className="text-sm text-muted-foreground">
+                      This suite tests security headers, rate limiting, SQL injection protection, XSS prevention,
+                      and authentication bypass attempts - simulating real-world attack vectors against your
+                      application.
+                    </CardContent>
+                  </Card>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

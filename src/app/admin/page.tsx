@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Shield, Users, Mail, TrendingUp, Activity, Download, Eye, BarChart3, Terminal } from "lucide-react"
+import { Shield, Users, Mail, TrendingUp, Activity, Download, Eye, BarChart3 } from "lucide-react"
 import Link from "next/link"
 
 // Mock data for the dashboard
@@ -234,7 +234,7 @@ export default function AdminDashboard() {
         {/* Quick Actions */}
         <Card className="p-6 mt-8">
           <h2 className="text-xl font-semibold text-foreground mb-6">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Button className="h-auto p-4 flex flex-col items-center space-y-2">
               <Mail className="h-6 w-6" />
               <span>Send Newsletter</span>
@@ -247,12 +247,6 @@ export default function AdminDashboard() {
               <BarChart3 className="h-6 w-6" />
               <span>View Analytics</span>
             </Button>
-            <Link href="/admin/pentest">
-              <Button variant="outline" className="h-auto p-4 flex flex-col items-center space-y-2 bg-transparent w-full">
-                <Terminal className="h-6 w-6" />
-                <span>Live Pentest</span>
-              </Button>
-            </Link>
           </div>
         </Card>
       </div>
