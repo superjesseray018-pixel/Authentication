@@ -26,6 +26,7 @@ import {
   Laptop,
   Shield,
   Eye,
+  Trash2,
 } from "lucide-react"
 import Link from "next/link"
 import { useUser } from "@clerk/nextjs"
@@ -77,6 +78,7 @@ export default function MonitorPage() {
   const [isAdmin, setIsAdmin] = useState(false)
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
+  const [clearing, setClearing] = useState(false)
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date())
 
   const [recentVisits, setRecentVisits] = useState<VisitData[]>([])
@@ -118,6 +120,34 @@ export default function MonitorPage() {
     setRefreshing(true)
     await fetchMonitoringData()
     setTimeout(() => setRefreshing(false), 500)
+  }
+
+  const handleClear = async () => {
+    if (!confirm('Are you sure you want to clear all monitoring data? This action cannot be undone.')) {
+      return
+    }
+
+    setClearing(true)
+    try {
+      const response = await fetch('/api/track', {
+        method: 'DELETE',
+      })
+      
+      if (response.ok) {
+        // Clear local state
+        setRecentVisits([])
+        setRecentLogins([])
+        setActiveViewers([])
+        alert('All monitoring data has been cleared successfully.')
+      } else {
+        alert('Failed to clear monitoring data. Please try again.')
+      }
+    } catch (error) {
+      console.error('Error clearing data:', error)
+      alert('An error occurred while clearing data.')
+    } finally {
+      setClearing(false)
+    }
   }
 
   // Auto-refresh every 30 seconds
@@ -209,14 +239,24 @@ export default function MonitorPage() {
               </p>
             </div>
             <div className="text-right space-y-2">
-              <Button
-                onClick={handleRefresh}
-                disabled={refreshing}
-                className="w-full"
-              >
-                <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-                Refresh
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleRefresh}
+                  disabled={refreshing}
+                  variant="default"
+                >
+                  <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+                  Refresh
+                </Button>
+                <Button
+                  onClick={handleClear}
+                  disabled={clearing}
+                  variant="destructive"
+                >
+                  <Trash2 className={`h-4 w-4 mr-2 ${clearing ? 'animate-pulse' : ''}`} />
+                  Clear All
+                </Button>
+              </div>
               <p className="text-xs text-muted-foreground">
                 Last updated: {lastRefresh.toLocaleTimeString()}
               </p>
@@ -500,10 +540,14 @@ export default function MonitorPage() {
           <div className="flex items-start gap-3">
             <Monitor className="h-5 w-5 text-primary mt-0.5" />
             <div className="space-y-1">
-              <h3 className="font-semibold">Auto-Refresh Enabled</h3>
+              <h3 className="font-semibold">Auto-Refresh Enabled & Privacy Protected</h3>
               <p className="text-sm text-muted-foreground">
                 This dashboard automatically refreshes every 30 seconds to show the latest visitor activity. 
                 You can also manually refresh using the button above for instant updates.
+              </p>
+              <p className="text-sm text-muted-foreground mt-2">
+                <strong>Privacy Notice:</strong> Email addresses are partially hidden (e.g., us***@domain.com) 
+                and IP addresses are masked (e.g., 192.168.***.**) to protect visitor privacy.
               </p>
             </div>
           </div>

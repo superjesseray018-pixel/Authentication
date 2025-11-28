@@ -8,6 +8,27 @@ export const visitorsData = {
   activeViewers: [] as any[],
 }
 
+// Hash email for privacy (show first 2 chars + *** + domain)
+function hashEmail(email: string): string {
+  if (!email) return ''
+  const [username, domain] = email.split('@')
+  if (!username || !domain) return email
+  
+  const visibleChars = Math.min(2, username.length)
+  const hashedUsername = username.substring(0, visibleChars) + '***'
+  return `${hashedUsername}@${domain}`
+}
+
+// Hash IP address for privacy (show first 2 octets only)
+function hashIPAddress(ip: string): string {
+  if (!ip || ip === 'Unknown') return ip
+  
+  const octets = ip.split('.')
+  if (octets.length !== 4) return ip
+  
+  return `${octets[0]}.${octets[1]}.***.***.`
+}
+
 // Clean up inactive viewers (older than 5 minutes)
 function cleanupInactiveViewers() {
   const fiveMinutesAgo = Date.now() - 5 * 60 * 1000
@@ -54,11 +75,11 @@ export async function POST(request: Request) {
         visitorsData.activeViewers.push({
           id: viewerId,
           type: data.email ? 'user' : 'guest',
-          email: data.email || undefined,
+          email: data.email ? hashEmail(data.email) : undefined,
           name: data.name || undefined,
           device,
           browser,
-          ipAddress,
+          ipAddress: hashIPAddress(ipAddress),
           pageViewing: data.page,
           timeOnPage: '0s',
           timestamp,
@@ -69,11 +90,11 @@ export async function POST(request: Request) {
         visitorsData.recentVisits.unshift({
           id: `visit-${Date.now()}`,
           type: data.email ? 'user' : 'guest',
-          email: data.email || undefined,
+          email: data.email ? hashEmail(data.email) : undefined,
           device,
           browser,
           os: userAgent.includes('Windows') ? 'Windows' : userAgent.includes('Mac') ? 'macOS' : userAgent.includes('Linux') ? 'Linux' : 'Unknown',
-          ipAddress,
+          ipAddress: hashIPAddress(ipAddress),
           location: 'Philippines', // You can integrate IP geolocation API here
           timestamp,
           lastActive: timestamp,
@@ -94,11 +115,11 @@ export async function POST(request: Request) {
       // Track user login
       visitorsData.recentLogins.unshift({
         id: `login-${Date.now()}`,
-        email: data.email,
+        email: hashEmail(data.email),
         name: data.name,
         device,
         browser,
-        ipAddress,
+        ipAddress: hashIPAddress(ipAddress),
         location: 'Philippines',
         loginTime: timestamp,
         lastActive: timestamp,
@@ -149,6 +170,27 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
   } catch (error) {
     console.error('Error tracking visitor:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+
+// DELETE endpoint to clear all monitoring data
+export async function DELETE(request: Request) {
+  try {
+    // Clear all data
+    visitorsData.recentVisits = []
+    visitorsData.recentLogins = []
+    visitorsData.activeViewers = []
+
+    return NextResponse.json({ 
+      success: true, 
+      message: 'All monitoring data cleared' 
+    })
+  } catch (error) {
+    console.error('Error clearing data:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
