@@ -24,8 +24,13 @@ import {
   SignedOut,
   UserButton,
 } from "@clerk/nextjs"
+import { currentUser } from "@clerk/nextjs/server"
 
-export default function HomePage() {
+export default async function HomePage() {
+  // Check if user is admin
+  const user = await currentUser()
+  const isAdmin = user?.emailAddresses?.[0]?.emailAddress === 'superjesseray018@gmail.com'
+
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
@@ -59,18 +64,25 @@ export default function HomePage() {
               >
                 Projects
               </Link>
-              <Link
-                href="/security-plan"
-                className="hidden md:inline-flex text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-2 rounded-md hover:bg-accent"
-              >
-                Security
-              </Link>
-              <Link
-                href="/testing"
-                className="hidden lg:inline-flex text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-2 rounded-md hover:bg-accent"
-              >
-                Testing
-              </Link>
+              
+              {/* Admin-only links */}
+              {isAdmin && (
+                <>
+                  <Link
+                    href="/security-plan"
+                    className="hidden md:inline-flex text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-2 rounded-md hover:bg-accent"
+                  >
+                    Security
+                  </Link>
+                  <Link
+                    href="/testing"
+                    className="hidden lg:inline-flex text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-2 rounded-md hover:bg-accent"
+                  >
+                    Testing
+                  </Link>
+                </>
+              )}
+              
               <Link
                 href="#contact"
                 className="hidden md:inline-flex text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-2 rounded-md hover:bg-accent"
