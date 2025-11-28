@@ -1,5 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 const isProtectedRoute = createRouteMatcher([
   '/security(.*)',
@@ -7,13 +8,19 @@ const isProtectedRoute = createRouteMatcher([
   '/security-plan(.*)',
 ]);
 
-export default clerkMiddleware(async (auth, req) => {
+export default clerkMiddleware(async (auth, req: NextRequest) => {
   // Protect routes that require authentication
   if (isProtectedRoute(req)) {
-    const { userId } = await auth();
-    
-    if (!userId) {
-      // Redirect unauthenticated users to unauthorized page
+    try {
+      const { userId } = await auth();
+      
+      if (!userId) {
+        // Redirect unauthenticated users to unauthorized page
+        return NextResponse.redirect(new URL('/unauthorized', req.url));
+      }
+    } catch (error) {
+      // If Clerk fails (missing keys, etc.), block access anyway
+      console.error('Clerk middleware error:', error);
       return NextResponse.redirect(new URL('/unauthorized', req.url));
     }
   }
