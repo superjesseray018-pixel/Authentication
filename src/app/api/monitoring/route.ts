@@ -1,12 +1,33 @@
 import { NextResponse } from 'next/server'
 import { currentUser } from '@clerk/nextjs/server'
 
+// Import the shared visitors data from track route
+// In production, this would be a database query
+let visitorsData: any = null
+
+// Helper to get data from the track route storage
+async function getTrackingData() {
+  try {
+    // In production, query your database here
+    // For now, we'll use a module-level cache that the track endpoint populates
+    const trackModule = await import('../track/route')
+    return (trackModule as any).visitorsData || {
+      recentVisits: [],
+      recentLogins: [],
+      activeViewers: [],
+    }
+  } catch (error) {
+    return {
+      recentVisits: [],
+      recentLogins: [],
+      activeViewers: [],
+    }
+  }
+}
+
 // Get real monitoring data
-// In production, this would query your database for actual visitor data
 function getRealMonitoringData() {
-  // For now, return empty arrays since we don't have a database yet
-  // Once you set up analytics/tracking, this will return real data
-  return {
+  return visitorsData || {
     recentVisits: [],
     recentLogins: [],
     activeViewers: [],
@@ -35,8 +56,8 @@ export async function GET(request: Request) {
       )
     }
 
-    // Get real monitoring data
-    // In production, this would query your database for actual visitor data
+    // Get real monitoring data from tracking system
+    visitorsData = await getTrackingData()
     const monitoringData = getRealMonitoringData()
 
     return NextResponse.json(monitoringData, {

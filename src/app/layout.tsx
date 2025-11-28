@@ -9,6 +9,7 @@ import {
 } from '@clerk/nextjs'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import { VisitorTracker } from '@/components/visitor-tracker'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -29,6 +30,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body className={`${inter.variable} antialiased`}>
+          <VisitorTracker />
           {children}
         </body>
       </html>
