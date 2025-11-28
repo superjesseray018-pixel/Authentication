@@ -80,6 +80,12 @@ export default async function HomePage() {
                   >
                     Testing
                   </Link>
+                  <Link
+                    href="/monitor"
+                    className="hidden lg:inline-flex text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-2 rounded-md hover:bg-accent"
+                  >
+                    Monitor
+                  </Link>
                 </>
               )}
               
