@@ -1,4 +1,5 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import { NextResponse } from 'next/server';
 
 const isProtectedRoute = createRouteMatcher([
   '/security(.*)',
@@ -9,7 +10,12 @@ const isProtectedRoute = createRouteMatcher([
 export default clerkMiddleware(async (auth, req) => {
   // Protect routes that require authentication
   if (isProtectedRoute(req)) {
-    await auth.protect();
+    const { userId } = await auth();
+    
+    if (!userId) {
+      // Redirect unauthenticated users to unauthorized page
+      return NextResponse.redirect(new URL('/unauthorized', req.url));
+    }
   }
 });
 
