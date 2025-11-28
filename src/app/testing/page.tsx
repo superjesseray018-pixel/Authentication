@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -37,6 +37,13 @@ export default function TestingPage() {
   const [kaliOutput, setKaliOutput] = useState<string[]>([])
   const [kaliLoading, setKaliLoading] = useState(false)
   const [selectedKaliTest, setSelectedKaliTest] = useState<string>("")
+  const terminalRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (terminalRef.current) {
+      terminalRef.current.scrollTop = terminalRef.current.scrollHeight
+    }
+  }, [kaliOutput])
 
   const runTest = async (testType: string) => {
     setLoading(true)
@@ -1013,33 +1020,67 @@ export default function TestingPage() {
 
                 {/* Terminal Output */}
                 <Card className="bg-black border-green-500/20">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between mb-3 pb-2 border-b border-green-500/20">
+                  <CardContent className="p-0">
+                    <div className="flex items-center justify-between px-4 py-2 border-b border-green-500/20 bg-gray-900">
                       <div className="flex items-center gap-2">
-                        <Terminal className="h-4 w-4 text-green-500" />
-                        <span className="text-green-500 font-mono text-sm">kali@pentest:~$</span>
+                        <div className="flex gap-1.5">
+                          <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                          <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                          <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                        </div>
+                        <Terminal className="h-4 w-4 text-green-500 ml-2" />
+                        <span className="text-green-500 font-mono text-sm">root@kali-pentest:~#</span>
                       </div>
                       {kaliLoading && (
-                        <Badge variant="outline" className="border-green-500/50 text-green-500">
+                        <Badge variant="outline" className="border-green-500/50 text-green-500 bg-green-500/10">
                           <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                          Running...
+                          Executing...
                         </Badge>
                       )}
                     </div>
                     
                     <div 
-                      className="font-mono text-sm text-green-400 overflow-y-auto max-h-[600px] space-y-1"
-                      style={{ scrollBehavior: "smooth" }}
+                      ref={terminalRef}
+                      className="font-mono text-sm text-green-400 overflow-y-auto p-4 bg-black"
+                      style={{ 
+                        height: "600px",
+                        scrollBehavior: "smooth",
+                        lineHeight: "1.5"
+                      }}
                     >
                       {kaliOutput.length > 0 ? (
                         kaliOutput.map((line, idx) => (
-                          <div key={idx} className="whitespace-pre-wrap break-all">
-                            {line}
+                          <div 
+                            key={idx} 
+                            className={`whitespace-pre-wrap break-all ${
+                              line.includes('✅') ? 'text-green-400' :
+                              line.includes('❌') ? 'text-red-400' :
+                              line.includes('⚠️') ? 'text-yellow-400' :
+                              line.includes('🎯') ? 'text-cyan-400 font-semibold' :
+                              line.includes('═') ? 'text-blue-400' :
+                              line.includes('─') ? 'text-gray-600' :
+                              line.includes('$') ? 'text-purple-400' :
+                              line.includes('📊') ? 'text-yellow-300 font-semibold' :
+                              'text-green-400'
+                            }`}
+                          >
+                            {line || '\u00A0'}
                           </div>
                         ))
                       ) : (
                         <div className="text-green-500/50 italic">
-                          Waiting for test execution... Select a test above or run all tests.
+                          <div>╔═══════════════════════════════════════════════════════════╗</div>
+                          <div>║  Kali Linux Penetration Testing Terminal                 ║</div>
+                          <div>║  Ready to execute security tests...                       ║</div>
+                          <div>║                                                           ║</div>
+                          <div>║  Select a test above or run comprehensive suite          ║</div>
+                          <div>╚═══════════════════════════════════════════════════════════╝</div>
+                        </div>
+                      )}
+                      {kaliLoading && (
+                        <div className="flex items-center gap-2 mt-2 text-green-500">
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <span className="animate-pulse">Executing penetration tests...</span>
                         </div>
                       )}
                     </div>
