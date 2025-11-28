@@ -127,16 +127,16 @@ export default async function HomePage() {
       <section className="relative overflow-hidden py-20 lg:py-32">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 dark:from-primary/10 dark:via-transparent dark:to-secondary/10" />
         <div className="max-w-6xl mx-auto px-6 lg:px-8 relative">
-          <div className="grid lg:grid-cols-[1fr,auto] gap-12 items-center">
-            <div className="space-y-6">
+          <div className="flex flex-col lg:flex-row gap-12 items-center justify-between">
+            <div className="flex-1 space-y-6">
               <div className="space-y-2">
                 <p className="text-sm text-primary font-mono">Hi, my name is</p>
-                <h1 className="text-5xl lg:text-7xl font-bold text-foreground text-balance">Jesse Ray S. Lasam</h1>
-                <h2 className="text-3xl lg:text-5xl font-bold text-muted-foreground text-balance">
+                <h1 className="text-4xl lg:text-6xl font-bold text-foreground text-balance">Jesse Ray S. Lasam</h1>
+                <h2 className="text-2xl lg:text-4xl font-bold text-muted-foreground text-balance">
                   IT Student | AI Enthusiast | Cybersecurity Focused | AI Protector Workshop Intern
                 </h2>
               </div>
-              <p className="text-lg text-muted-foreground text-pretty max-w-2xl leading-relaxed">
+              <p className="text-lg text-muted-foreground text-pretty leading-relaxed">
                 3rd year Bachelor of Science in Information Technology student at St. Paul University Philippines with a
                 major in Artificial Intelligence. Passionate about cybersecurity, ethical hacking, and building
                 intelligent secure systems. Currently exploring the intersection of AI and cybersecurity.
@@ -152,8 +152,8 @@ export default async function HomePage() {
             </div>
             
             {/* Profile Image Circle */}
-            <div className="hidden lg:block">
-              <div className="relative w-80 h-80 rounded-full overflow-hidden border-4 border-primary/20 shadow-2xl ring-2 ring-primary/10">
+            <div className="flex-shrink-0">
+              <div className="relative w-64 h-64 lg:w-80 lg:h-80 rounded-full overflow-hidden border-4 border-primary/20 shadow-2xl ring-2 ring-primary/10">
                 <Image
                   src="/images/profile.jpg"
                   alt="Jesse Ray S. Lasam"
