@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ThemeToggle } from "@/components/theme-toggle"
+import Image from "next/image"
 import {
   Shield,
   Lock,
@@ -126,7 +127,7 @@ export default async function HomePage() {
       <section className="relative overflow-hidden py-20 lg:py-32">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 dark:from-primary/10 dark:via-transparent dark:to-secondary/10" />
         <div className="max-w-6xl mx-auto px-6 lg:px-8 relative">
-          <div className="max-w-3xl">
+          <div className="grid lg:grid-cols-[1fr,auto] gap-12 items-center">
             <div className="space-y-6">
               <div className="space-y-2">
                 <p className="text-sm text-primary font-mono">Hi, my name is</p>
@@ -147,6 +148,19 @@ export default async function HomePage() {
                 <Button variant="outline" size="lg" asChild>
                   <Link href="#projects">View My Work</Link>
                 </Button>
+              </div>
+            </div>
+            
+            {/* Profile Image Circle */}
+            <div className="hidden lg:block">
+              <div className="relative w-80 h-80 rounded-full overflow-hidden border-4 border-primary/20 shadow-2xl ring-2 ring-primary/10">
+                <Image
+                  src="/images/profile.jpg"
+                  alt="Jesse Ray S. Lasam"
+                  fill
+                  className="object-cover"
+                  priority
+                />
               </div>
             </div>
           </div>
