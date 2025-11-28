@@ -20,7 +20,6 @@ import {
 import Link from "next/link"
 import {
   SignInButton,
-  SignUpButton,
   SignedIn,
   SignedOut,
   UserButton,
@@ -109,11 +108,6 @@ export default async function HomePage() {
                     Sign in
                   </Button>
                 </SignInButton>
-                <SignUpButton mode="modal">
-                  <Button size="sm" className="bg-primary hover:bg-primary/90 text-sm">
-                    Sign Up
-                  </Button>
-                </SignUpButton>
               </SignedOut>
               <SignedIn>
                 <UserButton afterSignOutUrl="/" />
