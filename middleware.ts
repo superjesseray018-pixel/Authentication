@@ -8,27 +8,28 @@ const isProtectedRoute = createRouteMatcher([
   '/security-plan(.*)',
 ]);
 
-const ADMIN_EMAIL = 'superjesseray018@gmail.com';
-
 export default clerkMiddleware(async (auth, req: NextRequest) => {
   // Protect routes that require authentication
   if (isProtectedRoute(req)) {
     try {
-      const { userId, sessionClaims } = await auth();
+      const { userId } = await auth();
       
-      // Check if user is authenticated and is admin
-      const userEmail = sessionClaims?.email as string | undefined;
-      
-      if (!userId || userEmail !== ADMIN_EMAIL) {
-        // Block access - redirect to unauthorized page
+      // If no authenticated user, redirect to unauthorized
+      if (!userId) {
         return NextResponse.redirect(new URL('/unauthorized', req.url));
       }
+      
+      // User is authenticated, allow access
+      return NextResponse.next();
     } catch (error) {
-      // If Clerk fails or throws error, block access
+      // If Clerk fails, block access
       console.error('Clerk middleware error:', error);
       return NextResponse.redirect(new URL('/unauthorized', req.url));
     }
   }
+  
+  // Allow all other routes
+  return NextResponse.next();
 });
 
 export const config = {
