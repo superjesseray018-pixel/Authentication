@@ -2,7 +2,7 @@
 
 ## 🎯 Overview
 This guide will help you set up Kali Linux in Oracle VirtualBox to perform penetration testing on your portfolio application at:
-- **Target:** https://portfolio-app-with-authentication-cpq4j1upa.vercel.app
+- **Target:** https://portfolio-app-with-authentication-5xc9mbpoy.vercel.app
 
 ---
 
