@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { CheckCircle2, XCircle, Shield, AlertTriangle, Terminal, FileCode, Lock, Zap, Play, Loader2, RotateCcw, Download } from "lucide-react"
+import { CheckCircle2, XCircle, Shield, AlertTriangle, Terminal, FileCode, Lock, Zap, Play, Loader2, RotateCcw, Download, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 
 type TestResult = {
@@ -229,6 +229,27 @@ export default function TestingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+      {/* Navigation */}
+      <nav className="border-b border-border/40 backdrop-blur-sm sticky top-0 z-50 bg-background/95">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            {/* Logo */}
+            <Link href="/" className="flex items-center space-x-2 group">
+              <Shield className="h-6 w-6 text-primary group-hover:text-secondary transition-colors" />
+              <span className="text-lg font-semibold text-foreground">JRL</span>
+            </Link>
+
+            {/* Back Button */}
+            <Button variant="ghost" size="sm" asChild>
+              <Link href="/">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Portfolio
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </nav>
+
       <div className="container mx-auto px-4 py-12 max-w-6xl">
         {/* Header */}
         <div className="text-center mb-12">
